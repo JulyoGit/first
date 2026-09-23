@@ -1,54 +1,54 @@
+
 import { useEffect, useState } from "react";
 
-// Reusable calculator button component
 function CalculatorButton({ children, onClick, className = "" }) {
   return (
     <button
       onClick={onClick}
-      className={`h-16 rounded-xl text-xl font-semibold transition-all duration-150
-        active:scale-95 hover:brightness-110 focus:outline-none focus:ring-2
-        focus:ring-blue-400 ${className}`}
+      className={`h-16 rounded-xl text-xl font-semibold transition-all duration-150 active:scale-95 hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${className}`}
     >
       {children}
     </button>
   );
 }
 
-// User Guide component
 function UserGuide() {
   return (
-    <section className="mt-8 rounded-2xl bg-white p-6 shadow-lg">
-      <h2 className="mb-4 text-xl font-bold text-gray-800">
-        📖 How to Use
+    <section className="mt-8 rounded-2xl bg-[#fffaf2] p-6 shadow-[0_8px_25px_rgba(90,65,45,0.10)] border border-[#eadfce]">
+      <h2 className="mb-4 text-xl font-bold text-[#5c4033] text-center">
+        How to Use
       </h2>
 
-      <div className="space-y-3 text-sm text-gray-600">
+      <div className="space-y-3 text-sm leading-relaxed text-[#765f4d]">
         <p>
-          <strong>1. Enter numbers:</strong> Click the number buttons
-          from 0–9.
+          <strong className="text-[#5c4033]">1. Enter numbers:</strong>{" "}
+          Click number buttons from 0–9.
         </p>
 
         <p>
-          <strong>2. Choose an operation:</strong> Use +, −, ×, or ÷.
+          <strong className="text-[#5c4033]">2. Choose operator:</strong>{" "}
+          Use +, −, ×, or ÷.
         </p>
 
         <p>
-          <strong>3. Calculate:</strong> Press the = button to display
-          the result.
+          <strong className="text-[#5c4033]">3. Calculate:</strong>{" "}
+          Click " = " equal to display the result.
         </p>
 
         <p>
-          <strong>4. Clear:</strong> Press AC to reset the calculator.
+          <strong className="text-[#5c4033]">4. Clear:</strong>{" "}
+          Press AC to reset the calculator.
         </p>
 
         <p>
-          <strong>5. Keyboard:</strong> You can also use your keyboard
-          to enter numbers and operations.
+          <strong className="text-[#5c4033]">5. Keyboard:</strong>{" "}
+          You can also use your keyboard to enter numbers and operations.
         </p>
 
-        <div className="rounded-lg bg-gray-100 p-3">
-          <strong>Supported Operations:</strong>
-          <ul className="mt-2 list-inside list-disc">
+        <div className="rounded-xl bg-[#f3eadc] p-4">
+          <strong className="text-[#5c4033]">Supported Operations:</strong>
+
+          <ul className="mt-2 list-inside list-disc text-[#765f4d]">
             <li>Addition (+)</li>
             <li>Subtraction (−)</li>
             <li>Multiplication (×)</li>
@@ -60,37 +60,30 @@ function UserGuide() {
   );
 }
 
-// Main calculator component
 function Calculator() {
   const [display, setDisplay] = useState("0");
   const [firstNumber, setFirstNumber] = useState(null);
   const [operator, setOperator] = useState(null);
   const [waitingForSecondNumber, setWaitingForSecondNumber] = useState(false);
 
-  // Perform the calculation
   const calculate = (first, second, operation) => {
     switch (operation) {
       case "+":
         return first + second;
-
       case "-":
         return first - second;
-
       case "×":
         return first * second;
-
       case "÷":
         if (second === 0) {
           return "Error";
         }
         return first / second;
-
       default:
         return second;
     }
   };
 
-  // Handle number buttons
   const inputNumber = (number) => {
     if (display === "Error") {
       setDisplay(number);
@@ -105,7 +98,6 @@ function Calculator() {
     }
   };
 
-  // Handle decimal point
   const inputDecimal = () => {
     if (display === "Error") {
       setDisplay("0.");
@@ -123,7 +115,6 @@ function Calculator() {
     }
   };
 
-  // Handle operators
   const chooseOperator = (nextOperator) => {
     if (display === "Error") {
       return;
@@ -151,9 +142,12 @@ function Calculator() {
     setWaitingForSecondNumber(true);
   };
 
-  // Handle equals button
   const performCalculation = () => {
-    if (firstNumber === null || operator === null || display === "Error") {
+    if (
+      firstNumber === null ||
+      operator === null ||
+      display === "Error"
+    ) {
       return;
     }
 
@@ -171,7 +165,6 @@ function Calculator() {
     setWaitingForSecondNumber(true);
   };
 
-  // Clear calculator
   const clearCalculator = () => {
     setDisplay("0");
     setFirstNumber(null);
@@ -179,7 +172,6 @@ function Calculator() {
     setWaitingForSecondNumber(false);
   };
 
-  // Keyboard support
   useEffect(() => {
     const handleKeyDown = (event) => {
       const key = event.key;
@@ -212,164 +204,174 @@ function Calculator() {
   });
 
   return (
-    <div className="w-full max-w-md rounded-3xl bg-gray-900 p-5 shadow-2xl">
-      {/* Calculator header */}
-      <div className="mb-5 text-center">
-        <h1 className="text-2xl font-bold text-white">
+    <div className="w-full max-w-md rounded-[2rem] bg-[#fffaf2] p-6 shadow-[0_15px_40px_rgba(76,55,38,0.18)] border border-[#eadfce]">
+      <div className="mb-6 text-center">
+        <div className="mb-2 text-3xl">☕</div>
+
+        <h1 className="text-2xl font-bold text-[#5c4033]">
           DCIT 26 Calculator
         </h1>
-        <p className="mt-1 text-sm text-gray-400">
+
+        <p className="mt-1 text-sm text-[#8a715d]">
           Application Development and Emerging Technologies
         </p>
       </div>
 
-      {/* Display */}
-      <div className="mb-5 rounded-2xl bg-gray-800 p-5 text-right">
-        <div className="min-h-10 overflow-x-auto text-4xl font-bold text-white">
+      <div className="mb-5 rounded-2xl bg-[#f1e5d5] p-5 shadow-inner border border-[#e3d4c1]">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#9a7b5d]">
+          Output
+        </p>
+
+        <div className="min-h-12 overflow-x-auto text-right text-4xl font-bold text-[#4b3428]">
           {display}
         </div>
 
         {operator && firstNumber !== null && (
-          <div className="mt-2 text-sm text-gray-400">
+          <div className="mt-2 text-right text-sm text-[#8a715d]">
             {firstNumber} {operator}
           </div>
         )}
       </div>
 
-      {/* Calculator buttons */}
-      <div className="grid grid-cols-4 gap-3">
-        <CalculatorButton
-          onClick={clearCalculator}
-          className="bg-red-500 text-white"
-        >
-          AC
-        </CalculatorButton>
+      <div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#9a7b5d]">
+          Input & Operations
+        </p>
 
-        <CalculatorButton
-          onClick={() => chooseOperator("÷")}
-          className="bg-blue-500 text-white"
-        >
-          ÷
-        </CalculatorButton>
+        <div className="grid grid-cols-4 gap-3">
+          <CalculatorButton
+            onClick={clearCalculator}
+            className="bg-[#c89f7b] text-white shadow-sm"
+          >
+            AC
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => chooseOperator("×")}
-          className="bg-blue-500 text-white"
-        >
-          ×
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => chooseOperator("÷")}
+            className="bg-[#e4d2bd] text-[#5c4033] shadow-sm"
+          >
+            ÷
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => chooseOperator("-")}
-          className="bg-blue-500 text-white"
-        >
-          −
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => chooseOperator("×")}
+            className="bg-[#e4d2bd] text-[#5c4033] shadow-sm"
+          >
+            ×
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("7")}
-          className="bg-gray-700 text-white"
-        >
-          7
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => chooseOperator("-")}
+            className="bg-[#e4d2bd] text-[#5c4033] shadow-sm"
+          >
+            −
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("8")}
-          className="bg-gray-700 text-white"
-        >
-          8
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("7")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            7
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("9")}
-          className="bg-gray-700 text-white"
-        >
-          9
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("8")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            8
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => chooseOperator("+")}
-          className="row-span-2 bg-blue-500 text-white"
-        >
-          +
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("9")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            9
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("4")}
-          className="bg-gray-700 text-white"
-        >
-          4
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => chooseOperator("+")}
+            className="row-span-2 bg-[#a67c52] text-white shadow-md"
+          >
+            +
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("5")}
-          className="bg-gray-700 text-white"
-        >
-          5
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("4")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            4
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("6")}
-          className="bg-gray-700 text-white"
-        >
-          6
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("5")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            5
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("1")}
-          className="bg-gray-700 text-white"
-        >
-          1
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("6")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            6
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("2")}
-          className="bg-gray-700 text-white"
-        >
-          2
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("1")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            1
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("3")}
-          className="bg-gray-700 text-white"
-        >
-          3
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("2")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            2
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={performCalculation}
-          className="row-span-2 bg-green-500 text-white"
-        >
-          =
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("3")}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            3
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={() => inputNumber("0")}
-          className="col-span-2 bg-gray-700 text-white"
-        >
-          0
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={performCalculation}
+            className="row-span-2 bg-[#7b573f] text-white shadow-md"
+          >
+            =
+          </CalculatorButton>
 
-        <CalculatorButton
-          onClick={inputDecimal}
-          className="bg-gray-700 text-white"
-        >
-          .
-        </CalculatorButton>
+          <CalculatorButton
+            onClick={() => inputNumber("0")}
+            className="col-span-2 bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            0
+          </CalculatorButton>
+
+          <CalculatorButton
+            onClick={inputDecimal}
+            className="bg-[#f5eee5] text-[#5c4033] shadow-sm border border-[#e8dccd]"
+          >
+            .
+          </CalculatorButton>
+        </div>
       </div>
     </div>
   );
 }
 
-// Main App component
 function App() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 px-4 py-8">
+    <main className="min-h-screen bg-[#eadbc8] px-4 py-10">
       <div className="mx-auto max-w-md">
         <Calculator />
+
         <UserGuide />
 
-        <footer className="mt-6 text-center text-sm text-gray-500">
+        <footer className="mt-6 text-center text-sm text-[#765f4d]">
           DCIT 26 • Laboratory 1 • SY 2026–2027
         </footer>
       </div>
