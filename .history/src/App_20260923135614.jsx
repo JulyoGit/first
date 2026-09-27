@@ -1,80 +1,96 @@
 import { useEffect, useState } from "react";
 
+// Reusable calculator button component
 function CalculatorButton({ children, onClick, className = "" }) {
   return (
     <button
       onClick={onClick}
-      className={`h-16 rounded-2xl text-xl font-semibold transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#b98b62] ${className}`}
+      className={`h-16 rounded-xl text-xl font-semibold transition-all duration-150
+        active:scale-95 hover:brightness-110 focus:outline-none focus:ring-2
+        focus:ring-blue-400 ${className}`}
     >
       {children}
     </button>
   );
 }
 
+// User Guide component
 function UserGuide() {
   return (
-    <section className="mt-6 rounded-3xl border border-[#e6d7c5] bg-[#fffaf4] p-6 shadow-[0_10px_30px_rgba(82,57,38,0.08)]">
-      <h2 className="mb-4 text-center text-xl font-bold text-[#5c4033]">
-        How to Use
+    <section className="mt-8 rounded-2xl bg-white p-6 shadow-lg">
+      <h2 className="mb-4 text-xl font-bold text-gray-800">
+        📖 How to Use
       </h2>
 
-      <div className="space-y-3 text-sm leading-relaxed text-[#765f4d]">
+      <div className="space-y-3 text-sm text-gray-600">
         <p>
-          <span className="font-bold text-[#a67c52]">1.</span>{" "}
-          Enter numbers using the buttons or your keyboard.
+          <strong>1. Enter numbers:</strong> Click the number buttons
+          from 0–9.
         </p>
 
         <p>
-          <span className="font-bold text-[#a67c52]">2.</span>{" "}
-          Choose an operation such as +, −, ×, or ÷.
+          <strong>2. Choose an operation:</strong> Use +, −, ×, or ÷.
         </p>
 
         <p>
-          <span className="font-bold text-[#a67c52]">3.</span>{" "}
-          Press = to calculate or AC to reset.
+          <strong>3. Calculate:</strong> Press the = button to display
+          the result.
         </p>
 
-        <div className="mt-4 rounded-2xl bg-[#f3e8da] p-4">
-          <p className="mb-2 font-semibold text-[#5c4033]">
-            Supported Operations
-          </p>
+        <p>
+          <strong>4. Clear:</strong> Press AC to reset the calculator.
+        </p>
 
-          <div className="grid grid-cols-2 gap-2 text-[#765f4d]">
-            <span>+ Addition</span>
-            <span>− Subtraction</span>
-            <span>× Multiplication</span>
-            <span>÷ Division</span>
-          </div>
+        <p>
+          <strong>5. Keyboard:</strong> You can also use your keyboard
+          to enter numbers and operations.
+        </p>
+
+        <div className="rounded-lg bg-gray-100 p-3">
+          <strong>Supported Operations:</strong>
+          <ul className="mt-2 list-inside list-disc">
+            <li>Addition (+)</li>
+            <li>Subtraction (−)</li>
+            <li>Multiplication (×)</li>
+            <li>Division (÷)</li>
+          </ul>
         </div>
       </div>
     </section>
   );
 }
 
+// Main calculator component
 function Calculator() {
   const [display, setDisplay] = useState("0");
   const [firstNumber, setFirstNumber] = useState(null);
   const [operator, setOperator] = useState(null);
   const [waitingForSecondNumber, setWaitingForSecondNumber] = useState(false);
 
+  // Perform the calculation
   const calculate = (first, second, operation) => {
     switch (operation) {
       case "+":
         return first + second;
+
       case "-":
         return first - second;
+
       case "×":
         return first * second;
+
       case "÷":
         if (second === 0) {
           return "Error";
         }
         return first / second;
+
       default:
         return second;
     }
   };
 
+  // Handle number buttons
   const inputNumber = (number) => {
     if (display === "Error") {
       setDisplay(number);
@@ -89,6 +105,7 @@ function Calculator() {
     }
   };
 
+  // Handle decimal point
   const inputDecimal = () => {
     if (display === "Error") {
       setDisplay("0.");
@@ -106,6 +123,7 @@ function Calculator() {
     }
   };
 
+  // Handle operators
   const chooseOperator = (nextOperator) => {
     if (display === "Error") {
       return;
@@ -133,12 +151,9 @@ function Calculator() {
     setWaitingForSecondNumber(true);
   };
 
+  // Handle equals button
   const performCalculation = () => {
-    if (
-      firstNumber === null ||
-      operator === null ||
-      display === "Error"
-    ) {
+    if (firstNumber === null || operator === null || display === "Error") {
       return;
     }
 
@@ -156,6 +171,7 @@ function Calculator() {
     setWaitingForSecondNumber(true);
   };
 
+  // Clear calculator
   const clearCalculator = () => {
     setDisplay("0");
     setFirstNumber(null);
@@ -163,6 +179,7 @@ function Calculator() {
     setWaitingForSecondNumber(false);
   };
 
+  // Keyboard support
   useEffect(() => {
     const handleKeyDown = (event) => {
       const key = event.key;
@@ -195,165 +212,147 @@ function Calculator() {
   });
 
   return (
-    <div className="rounded-[2rem] border border-[#e5d5c2] bg-[#fffaf4] p-5 shadow-[0_20px_45px_rgba(74,50,32,0.15)] sm:p-6">
-
-      <div className="mb-5">
-        <h1 className="text-center text-2xl font-bold text-[#5c4033]">
+    <div className="w-full max-w-md rounded-3xl bg-gray-900 p-5 shadow-2xl">
+      {/* Calculator header */}
+      <div className="mb-5 text-center">
+        <h1 className="text-2xl font-bold text-white">
           DCIT 26 Calculator
         </h1>
-
-        <p className="mt-1 text-center text-xs text-[#8a715d]">
-          Application Development & Emerging Technologies
+        <p className="mt-1 text-sm text-gray-400">
+          Application Development and Emerging Technologies
         </p>
       </div>
 
-      <div className="mb-5 rounded-3xl bg-[#3f3028] p-5 shadow-inner">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#c9ad91]">
-            Display
-          </span>
-
-          {operator && (
-            <span className="rounded-full bg-[#5b4639] px-3 py-1 text-xs font-semibold text-[#e8d5c1]">
-              {operator}
-            </span>
-          )}
-        </div>
-
-        <div className="min-h-16 overflow-x-auto whitespace-nowrap text-right text-4xl font-bold text-[#fff8ef]">
+      {/* Display */}
+      <div className="mb-5 rounded-2xl bg-gray-800 p-5 text-right">
+        <div className="min-h-10 overflow-x-auto text-4xl font-bold text-white">
           {display}
         </div>
 
         {operator && firstNumber !== null && (
-          <div className="mt-2 text-right text-sm text-[#c9ad91]">
+          <div className="mt-2 text-sm text-gray-400">
             {firstNumber} {operator}
           </div>
         )}
       </div>
 
-      <div className="mb-3">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#9a7b5d]">
-          Calculator
-        </p>
-      </div>
-
+      {/* Calculator buttons */}
       <div className="grid grid-cols-4 gap-3">
-
         <CalculatorButton
           onClick={clearCalculator}
-          className="bg-[#c9946b] text-white"
+          className="bg-red-500 text-white"
         >
           AC
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => chooseOperator("÷")}
-          className="bg-[#eadbc9] text-[#654838]"
+          className="bg-blue-500 text-white"
         >
           ÷
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => chooseOperator("×")}
-          className="bg-[#eadbc9] text-[#654838]"
+          className="bg-blue-500 text-white"
         >
           ×
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => chooseOperator("-")}
-          className="bg-[#eadbc9] text-[#654838]"
+          className="bg-blue-500 text-white"
         >
           −
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("7")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           7
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("8")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           8
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("9")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           9
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => chooseOperator("+")}
-          className="row-span-2 bg-[#a67c52] text-white"
+          className="row-span-2 bg-blue-500 text-white"
         >
           +
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("4")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           4
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("5")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           5
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("6")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           6
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("1")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           1
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("2")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           2
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("3")}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           3
         </CalculatorButton>
 
         <CalculatorButton
           onClick={performCalculation}
-          className="row-span-2 bg-[#76513a] text-white"
+          className="row-span-2 bg-green-500 text-white"
         >
           =
         </CalculatorButton>
 
         <CalculatorButton
           onClick={() => inputNumber("0")}
-          className="col-span-2 border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="col-span-2 bg-gray-700 text-white"
         >
           0
         </CalculatorButton>
 
         <CalculatorButton
           onClick={inputDecimal}
-          className="border border-[#eadfd1] bg-[#f8f1e8] text-[#5c4033]"
+          className="bg-gray-700 text-white"
         >
           .
         </CalculatorButton>
@@ -362,20 +361,17 @@ function Calculator() {
   );
 }
 
+// Main App component
 function App() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#eadbc8] via-[#f3e8da] to-[#dfcbb5] px-4 py-8 sm:py-12">
-
-      <div className="mx-auto w-full max-w-md">
-
+    <main className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 px-4 py-8">
+      <div className="mx-auto max-w-md">
         <Calculator />
-
         <UserGuide />
 
-        <footer className="mt-6 text-center text-xs text-[#765f4d]">
+        <footer className="mt-6 text-center text-sm text-gray-500">
           DCIT 26 • Laboratory 1 • SY 2026–2027
         </footer>
-
       </div>
     </main>
   );
