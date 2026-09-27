@@ -20,21 +20,23 @@ function UserGuide() {
 
       <div className="space-y-3 text-sm leading-relaxed text-[#765f4d]">
         <p>
-          <b className="text-[#a67c52]">1.</b> Enter numbers using the
-          buttons or your keyboard.
+          <span className="font-bold text-[#a67c52]">1.</span>{" "}
+          Enter numbers using the buttons or your keyboard.
         </p>
 
         <p>
-          <b className="text-[#a67c52]">2.</b> Choose an operation +, −, ×, ÷
+          <span className="font-bold text-[#a67c52]">2.</span>{" "}
+          Choose an operation +, −, ×, ÷.
         </p>
 
         <p>
-          <b className="text-[#a67c52]">3.</b> Press = to calculate or AC to
-          reset.
+          <span className="font-bold text-[#a67c52]">3.</span>{" "}
+          Press = to calculate or AC to reset.
         </p>
 
         <p>
-          <b className="text-[#a67c52]">4.</b> The calculator follows PEMDAS.
+          <span className="font-bold text-[#a67c52]">4.</span>{" "}
+          The calculator follows PEMDAS.
         </p>
 
         <div className="mt-4 rounded-2xl bg-[#f3e8da] p-4">
@@ -58,128 +60,253 @@ function UserGuide() {
   );
 }
 
-function calculate(expression) {
-  const tokens = expression.match(/\d*\.?\d+|[+\-×÷]/g);
+function evaluateExpression(expression) {
+  const tokens = expression.match(/(?:\d+(?:\.\d*)?|\.\d+|[+\-×÷])/g);
 
-  if (!tokens || /[+\-×÷]$/.test(expression)) return "Error";
+  if (!tokens || tokens.length === 0) {
+    return "Error";
+  }
+
+  if (
+    isNaN(Number(tokens[0])) ||
+    isNaN(Number(tokens[tokens.length - 1]))
+  ) {
+    return "Error";
+  }
 
   const values = [...tokens];
 
-  
+
   for (let i = 1; i < values.length - 1; i++) {
     if (values[i] === "×" || values[i] === "÷") {
-      const a = Number(values[i - 1]);
-      const b = Number(values[i + 1]);
+      const left = Number(values[i - 1]);
+      const right = Number(values[i + 1]);
 
-      if (values[i] === "÷" && b === 0) return "Error";
+      if (values[i] === "÷" && right === 0) {
+        return "Error";
+      }
 
-      const result = values[i] === "×" ? a * b : a / b;
+      const result =
+        values[i] === "×"
+          ? left * right
+          : left / right;
 
       values.splice(i - 1, 3, String(result));
+
       i -= 2;
     }
   }
 
 
+
   let result = Number(values[0]);
 
   for (let i = 1; i < values.length; i += 2) {
-    result =
-      values[i] === "+"
-        ? result + Number(values[i + 1])
-        : result - Number(values[i + 1]);
+    const operation = values[i];
+    const number = Number(values[i + 1]);
+
+    if (operation === "+") {
+      result += number;
+    } else if (operation === "-") {
+      result -= number;
+    }
   }
 
-  return Number.isFinite(result) ? result : "Error";
+  if (!Number.isFinite(result)) {
+    return "Error";
+  }
+
+  return result;
 }
 
 function Calculator() {
+  const [display, setDisplay] = useState("0");
   const [expression, setExpression] = useState("");
-  const [resultShown, setResultShown] = useState(false);
-
-  const display = expression || "0";
+  const [justCalculated, setJustCalculated] = useState(false);
 
   const inputNumber = (number) => {
-    if (resultShown || expression === "Error") {
+
+
+    if (display === "Error") {
+      setDisplay(number);
       setExpression(number);
-      setResultShown(false);
+      setJustCalculated(false);
       return;
     }
+
+
+
+    if (justCalculated) {
+      setDisplay(number);
+      setExpression(number);
+      setJustCalculated(false);
+      return;
+    }
+
+
+
+    if (expression === "" || expression === "0") {
+      setExpression(number);
+      setDisplay(number);
+      return;
+    }
+
+
 
     const parts = expression.split(/[+\-×÷]/);
-    const current = parts[parts.length - 1];
+    const currentNumber = parts[parts.length - 1];
 
-    if (current === "0") {
-      const updated =
-        expression.slice(0, -1) + number;
 
-      setExpression(updated);
+    if (currentNumber === "0") {
+      const newExpression =
+        expression.slice(0, expression.length - 1) + number;
+
+      setExpression(newExpression);
+      setDisplay(newExpression);
       return;
     }
 
-    setExpression(expression + number);
+    const newExpression = expression + number;
+
+    setExpression(newExpression);
+    setDisplay(newExpression);
   };
 
   const inputDecimal = () => {
-    if (resultShown || expression === "Error") {
+    if (display === "Error") {
       setExpression("0.");
-      setResultShown(false);
+      setDisplay("0.");
+      setJustCalculated(false);
       return;
     }
 
-    const current = expression.split(/[+\-×÷]/).pop();
-
-    if (current.includes(".")) return;
-
-    if (!expression || /[+\-×÷]$/.test(expression)) {
-      setExpression(expression + "0.");
-    } else {
-      setExpression(expression + ".");
+    if (justCalculated) {
+      setExpression("0.");
+      setDisplay("0.");
+      setJustCalculated(false);
+      return;
     }
+
+
+
+    const parts = expression.split(/[+\-×÷]/);
+    const currentNumber = parts[parts.length - 1];
+    
+
+    if (currentNumber.includes(".")) {
+      return;
+    }
+
+    if (expression === "") {
+      setExpression("0.");
+      setDisplay("0.");
+      return;
+    }
+
+
+    if (
+      expression.endsWith("+") ||
+      expression.endsWith("-") ||
+      expression.endsWith("×") ||
+      expression.endsWith("÷")
+    ) {
+      const newExpression = expression + "0.";
+
+      setExpression(newExpression);
+      setDisplay(newExpression);
+      return;
+    }
+
+    const newExpression = expression + ".";
+
+    setExpression(newExpression);
+    setDisplay(newExpression);
   };
 
-  const chooseOperator = (operator) => {
-    if (expression === "Error") return;
-
-    if (resultShown) {
-      setExpression(expression + operator);
-      setResultShown(false);
+  const chooseOperator = (nextOperator) => {
+    if (display === "Error") {
       return;
     }
 
-    if (!expression) return;
 
-    if (/[+\-×÷]$/.test(expression)) {
-      setExpression(expression.slice(0, -1) + operator);
-    } else {
-      setExpression(expression + operator);
+    if (justCalculated) {
+      setExpression(display + nextOperator);
+      setDisplay(display + nextOperator);
+      setJustCalculated(false);
+      return;
     }
+
+
+    if (expression === "") {
+      return;
+    }
+
+
+
+    const lastCharacter = expression.slice(-1);
+
+    if (["+", "-", "×", "÷"].includes(lastCharacter)) {
+      const newExpression =
+        expression.slice(0, -1) + nextOperator;
+
+      setExpression(newExpression);
+      setDisplay(newExpression);
+      return;
+    }
+
+    const newExpression = expression + nextOperator;
+
+    setExpression(newExpression);
+    setDisplay(newExpression);
   };
 
   const performCalculation = () => {
-    if (!expression || /[+\-×÷]$/.test(expression)) return;
+    if (expression === "" || display === "Error") {
+      return;
+    }
 
-    const answer = calculate(expression);
 
-    setExpression(String(answer));
-    setResultShown(true);
+    const lastCharacter = expression.slice(-1);
+
+    if (["+", "-", "×", "÷"].includes(lastCharacter)) {
+      return;
+    }
+
+    const result = evaluateExpression(expression);
+
+    if (result === "Error") {
+      setDisplay("Error");
+      setExpression("");
+      setJustCalculated(false);
+      return;
+    }
+
+    setDisplay(String(result));
+    setExpression(String(result));
+    setJustCalculated(true);
   };
 
   const clearCalculator = () => {
+    setDisplay("0");
     setExpression("");
-    setResultShown(false);
+    setJustCalculated(false);
   };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       const key = event.key;
 
-      if (key >= "0" && key <= "9") inputNumber(key);
-      else if (key === ".") inputDecimal();
-      else if (key === "+") chooseOperator("+");
-      else if (key === "-") chooseOperator("-");
-      else if (key === "*") chooseOperator("×");
-      else if (key === "/") {
+      if (key >= "0" && key <= "9") {
+        inputNumber(key);
+      } else if (key === ".") {
+        inputDecimal();
+      } else if (key === "+") {
+        chooseOperator("+");
+      } else if (key === "-") {
+        chooseOperator("-");
+      } else if (key === "*") {
+        chooseOperator("×");
+      } else if (key === "/") {
         event.preventDefault();
         chooseOperator("÷");
       } else if (key === "Enter" || key === "=") {
@@ -190,7 +317,10 @@ function Calculator() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   });
 
   return (
@@ -356,7 +486,9 @@ function Calculator() {
 function App() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#eadbc8] via-[#f3e8da] to-[#dfcbb5] px-4 py-8 sm:py-12">
+
       <div className="mx-auto w-full max-w-md">
+
         <Calculator />
 
         <UserGuide />
@@ -364,9 +496,9 @@ function App() {
         <footer className="mt-6 text-center text-xs text-[#765f4d]">
           DCIT 26 • Laboratory 1 • SY 2026–2027
         </footer>
+
       </div>
     </main>
   );
 }
-
 export default App;

@@ -20,21 +20,18 @@ function UserGuide() {
 
       <div className="space-y-3 text-sm leading-relaxed text-[#765f4d]">
         <p>
-          <b className="text-[#a67c52]">1.</b> Enter numbers using the
-          buttons or your keyboard.
+          <span className="font-bold text-[#a67c52]">1.</span>{" "}
+          Enter numbers using the buttons or your keyboard.
         </p>
 
         <p>
-          <b className="text-[#a67c52]">2.</b> Choose an operation +, −, ×, ÷
+          <span className="font-bold text-[#a67c52]">2.</span>{" "}
+          Choose an operation such as +, −, ×, or ÷.
         </p>
 
         <p>
-          <b className="text-[#a67c52]">3.</b> Press = to calculate or AC to
-          reset.
-        </p>
-
-        <p>
-          <b className="text-[#a67c52]">4.</b> The calculator follows PEMDAS.
+          <span className="font-bold text-[#a67c52]">3.</span>{" "}
+          Press = to calculate or AC to reset.
         </p>
 
         <div className="mt-4 rounded-2xl bg-[#f3e8da] p-4">
@@ -48,138 +45,128 @@ function UserGuide() {
             <span>× Multiplication</span>
             <span>÷ Division</span>
           </div>
-
-          <p className="mt-3 text-xs text-[#8a715d]">
-            Example: 5 + 5 × 2 = 15
-          </p>
         </div>
       </div>
     </section>
   );
 }
 
-function calculate(expression) {
-  const tokens = expression.match(/\d*\.?\d+|[+\-×÷]/g);
-
-  if (!tokens || /[+\-×÷]$/.test(expression)) return "Error";
-
-  const values = [...tokens];
-
-  
-  for (let i = 1; i < values.length - 1; i++) {
-    if (values[i] === "×" || values[i] === "÷") {
-      const a = Number(values[i - 1]);
-      const b = Number(values[i + 1]);
-
-      if (values[i] === "÷" && b === 0) return "Error";
-
-      const result = values[i] === "×" ? a * b : a / b;
-
-      values.splice(i - 1, 3, String(result));
-      i -= 2;
-    }
-  }
-
-
-  let result = Number(values[0]);
-
-  for (let i = 1; i < values.length; i += 2) {
-    result =
-      values[i] === "+"
-        ? result + Number(values[i + 1])
-        : result - Number(values[i + 1]);
-  }
-
-  return Number.isFinite(result) ? result : "Error";
-}
-
 function Calculator() {
-  const [expression, setExpression] = useState("");
-  const [resultShown, setResultShown] = useState(false);
+  const [display, setDisplay] = useState("0");
+  const [firstNumber, setFirstNumber] = useState(null);
+  const [operator, setOperator] = useState(null);
+  const [waitingForSecondNumber, setWaitingForSecondNumber] = useState(false);
 
-  const display = expression || "0";
+  const calculate = (first, second, operation) => {
+    switch (operation) {
+      case "+":
+        return first + second;
+      case "-":
+        return first - second;
+      case "×":
+        return first * second;
+      case "÷":
+        if (second === 0) {
+          return "Error";
+        }
+        return first / second;
+      default:
+        return second;
+    }
+  };
 
   const inputNumber = (number) => {
-    if (resultShown || expression === "Error") {
-      setExpression(number);
-      setResultShown(false);
+    if (display === "Error") {
+      setDisplay(number);
       return;
     }
 
-    const parts = expression.split(/[+\-×÷]/);
-    const current = parts[parts.length - 1];
-
-    if (current === "0") {
-      const updated =
-        expression.slice(0, -1) + number;
-
-      setExpression(updated);
-      return;
+    if (waitingForSecondNumber) {
+      setDisplay(number);
+      setWaitingForSecondNumber(false);
+    } else {
+      setDisplay(display === "0" ? number : display + number);
     }
-
-    setExpression(expression + number);
   };
 
   const inputDecimal = () => {
-    if (resultShown || expression === "Error") {
-      setExpression("0.");
-      setResultShown(false);
+    if (display === "Error") {
+      setDisplay("0.");
       return;
     }
 
-    const current = expression.split(/[+\-×÷]/).pop();
-
-    if (current.includes(".")) return;
-
-    if (!expression || /[+\-×÷]$/.test(expression)) {
-      setExpression(expression + "0.");
-    } else {
-      setExpression(expression + ".");
-    }
-  };
-
-  const chooseOperator = (operator) => {
-    if (expression === "Error") return;
-
-    if (resultShown) {
-      setExpression(expression + operator);
-      setResultShown(false);
+    if (waitingForSecondNumber) {
+      setDisplay("0.");
+      setWaitingForSecondNumber(false);
       return;
     }
 
-    if (!expression) return;
-
-    if (/[+\-×÷]$/.test(expression)) {
-      setExpression(expression.slice(0, -1) + operator);
-    } else {
-      setExpression(expression + operator);
+    if (!display.includes(".")) {
+      setDisplay(display + ".");
     }
   };
+
+const chooseOperator = (nextOperator) => {
+  if (display === "Error") {
+    return;
+  }
+
+  const inputValue = parseFloat(display);
+
+  if (firstNumber === null) {
+    setFirstNumber(inputValue);
+  }
+
+  setOperator(nextOperator);
+  setWaitingForSecondNumber(true);
+};
+
 
   const performCalculation = () => {
-    if (!expression || /[+\-×÷]$/.test(expression)) return;
+    if (
+      firstNumber === null ||
+      operator === null ||
+      display === "Error"
+    ) {
+      return;
+    }
 
-    const answer = calculate(expression);
+    const secondNumber = parseFloat(display);
+    const result = calculate(firstNumber, secondNumber, operator);
 
-    setExpression(String(answer));
-    setResultShown(true);
+    if (result === "Error") {
+      setDisplay("Error");
+    } else {
+      setDisplay(String(result));
+    }
+
+    setFirstNumber(null);
+    setOperator(null);
+    setWaitingForSecondNumber(true);
   };
 
   const clearCalculator = () => {
-    setExpression("");
-    setResultShown(false);
+    setDisplay("0");
+    setFirstNumber(null);
+    setOperator(null);
+    setWaitingForSecondNumber(false);
   };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       const key = event.key;
 
-      if (key >= "0" && key <= "9") inputNumber(key);
-      else if (key === ".") inputDecimal();
-      else if (key === "+") chooseOperator("+");
-      else if (key === "-") chooseOperator("-");
-      else if (key === "*") chooseOperator("×");
-      else if (key === "/") {
+      if (key >= "0" && key <= "9") {
+        inputNumber(key);
+      } else if (key === ".") {
+        inputDecimal();
+      } else if (key === "+") {
+        chooseOperator("+");
+      } else if (key === "-") {
+        chooseOperator("-");
+      } else if (key === "*") {
+        chooseOperator("×");
+      } else if (key === "/") {
         event.preventDefault();
         chooseOperator("÷");
       } else if (key === "Enter" || key === "=") {
@@ -190,7 +177,10 @@ function Calculator() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   });
 
   return (
@@ -212,14 +202,17 @@ function Calculator() {
             Display
           </span>
 
-          <span className="rounded-full bg-[#5b4639] px-3 py-1 text-xs font-semibold text-[#e8d5c1]">
-            PEMDAS
-          </span>
+          {operator && (
+            <span className="rounded-full bg-[#5b4639] px-3 py-1 text-xs font-semibold text-[#e8d5c1]">
+              {operator}
+            </span>
+          )}
         </div>
 
         <div className="min-h-16 overflow-x-auto whitespace-nowrap text-right text-4xl font-bold text-[#fff8ef]">
           {display}
         </div>
+        
       </div>
 
       <div className="mb-3">
@@ -356,7 +349,9 @@ function Calculator() {
 function App() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#eadbc8] via-[#f3e8da] to-[#dfcbb5] px-4 py-8 sm:py-12">
+
       <div className="mx-auto w-full max-w-md">
+
         <Calculator />
 
         <UserGuide />
@@ -364,6 +359,7 @@ function App() {
         <footer className="mt-6 text-center text-xs text-[#765f4d]">
           DCIT 26 • Laboratory 1 • SY 2026–2027
         </footer>
+
       </div>
     </main>
   );
